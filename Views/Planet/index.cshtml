@@ -1,0 +1,8 @@
+@inject PlanetService planetService
+<h1>Các Hành Tinh</H1>
+
+<div class="list-group">
+    @foreach (var p in planetService) {
+        <a asp-action="@p.Name" class="list-group-item list-group-action">@p.Name - @p.VnName</a>
+    }
+</div>

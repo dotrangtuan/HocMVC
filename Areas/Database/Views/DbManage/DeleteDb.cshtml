@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Xóa Db";
+}
+
+<p class="alert alert-danger">
+    Có chắc chắn xóa ?
+</p>
+
+<form method="post" asp-action = "AcceptDeleteDb">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Xóa Db</button>
+
+    <hr>
+
+    <a asp-action="index">Trang Quản Lý DB</a>
+</form>

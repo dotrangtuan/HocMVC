@@ -1,18 +1,31 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 var services = builder.Services;
+
+
+services.AddDbContext<AppDbContext>(
+    options => {
+        string? connectionString = builder.Configuration.GetConnectionString("AppMvcConnectionStrings");
+        options.UseSqlServer(connectionString);
+    }
+);
 services.AddSingleton<ProductServices>();
+services.AddSingleton<PlanetService>();
 services.AddRazorPages();
 services.AddControllersWithViews();
+
 services.Configure<RazorViewEngineOptions>(
+
 
     // {0} actions
     // {1} controller
     // {2} areas
-    options => {
+    options =>
+    {
         options.ViewLocationFormats.Add("/MyViews/{1}/{0}" + RazorViewEngine.ViewExtension);
     }
 );
@@ -30,14 +43,18 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.AddStatusCodePage();
+
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapRazorPages();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "firstroute",
+    pattern: "{controller=home}/{action=index}/{id?}"
+);
 
 app.Run();

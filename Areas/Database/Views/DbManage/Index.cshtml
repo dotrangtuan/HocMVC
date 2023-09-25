@@ -1,0 +1,44 @@
+@using Microsoft.EntityFrameworkCore
+@using System.Data
+
+@inject AppDbContext dbContext
+
+@{
+    ViewData["Title"] = "Thông Tin DB";
+    var connect = dbContext.Database.GetDbConnection();
+    var dbName = connect.Database;
+    var can_connect = dbContext.Database.CanConnect();
+}
+
+<h1>Thông tin Cơ sở dữ liệu</h1>
+<p>Name: @dbName</p>
+<p>Source: @connect.DataSource</p>
+<p>State: @connect.State</p>
+
+
+<h2>Migrations</h2>
+@foreach (var mg in dbContext.Database.GetAppliedMigrations()) {
+    <p>@mg (up) </p>
+}
+
+@foreach (var mg in dbContext.Database.GetPendingMigrations()) {
+    <p>@mg (pending) </p>
+}
+
+@if (!can_connect) {
+    <p class="alert alert-danger">Chưa kết nối đến cơ sở dữ liệu !</p>
+    <a class="btn btn-success" asp-action="Migrations">Create DB from Migrations</a>
+}
+
+@if (can_connect) {
+    <h2>Các Table</h2>
+    await dbContext.Database.OpenConnectionAsync();
+    var Table = dbContext.Database.GetDbConnection().GetSchema("Tables");
+    foreach (System.Data.DataRow row in Table.Rows) {
+        @row["TABLE_NAME"];
+    }
+
+    <hr>
+
+    <a class="btn btn-danger" asp-action="DeleteDb">Xóa Database: @dbName</a>
+}
